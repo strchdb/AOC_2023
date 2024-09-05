@@ -10,9 +10,9 @@ import (
 )
 
 var colors = map[string]int{
-	"red":   12,
-	"green": 13,
-	"blue":  14,
+	"red":   0,
+	"green": 0,
+	"blue":  0,
 }
 
 func main() {
@@ -30,17 +30,12 @@ func main() {
 		game := strings.Split(line, ";")
 		temp := strings.Split(game[0], ":")
 		game[0] = temp[1]
-		isPossible := true
-		id, err := strconv.Atoi(strings.Split(temp[0], " ")[1])
 		if err != nil {
 			log.Fatal("Could not parse gameid")
 		}
+		gameSet := copyMap(colors)
 		for _, g := range game {
-			if !isPossible {
-				break
-			}
 			items := strings.Split(g, ",")
-			gameSet := copyMap(colors)
 			for _, i := range items {
 				t := strings.Split(strings.Trim(i, " "), " ")
 				amount, err := strconv.Atoi(t[0])
@@ -48,17 +43,17 @@ func main() {
 					log.Fatal("could not parse ", t[0])
 				}
 				color := t[1]
-				gameSet[color] = gameSet[color] - amount
-				if gameSet[color] < 0 {
-					isPossible = false
-					break
+				if gameSet[color] < amount {
+					gameSet[color] = amount
 				}
 			}
 
 		}
-		if isPossible {
-			sum += id
+		multiplied := 1
+		for _, v := range gameSet {
+			multiplied *= v
 		}
+		sum += multiplied
 	}
 	fmt.Println("Sum of possible games: ", sum)
 }
